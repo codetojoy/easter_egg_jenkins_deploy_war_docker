@@ -1,0 +1,46 @@
+
+import java.text.SimpleDateFormat
+
+apply plugin: 'jetty'
+
+def buildNumber = (project.hasProperty("BUILD_NUMBER")) ? BUILD_NUMBER : "unknown"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+compileJava << {
+    def templateBuildProperties = "${projectDir}/resources/template.build.properties"
+    def buildProperties = "${projectDir}/src/main/webapp/WEB-INF/classes/build.properties"
+    ant.delete(file: buildProperties)
+    
+    def formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    def buildTimestamp = formatter.format(new Date())
+    def BUILD_NUMBER_TOKEN = "BUILD_NUMBER"
+    def BUILD_TIMESTAMP_TOKEN = "BUILD_TIMESTAMP"
+
+    new File(buildProperties).withWriter { writer ->
+        new File(templateBuildProperties).eachLine { oldLine ->
+            def newLine = oldLine
+
+            if (oldLine.indexOf(BUILD_NUMBER_TOKEN) != -1) {
+                newLine = oldLine.replace(BUILD_NUMBER_TOKEN, buildNumber)
+            } else if (oldLine.indexOf(BUILD_TIMESTAMP_TOKEN) != -1) {
+                newLine = oldLine.replace(BUILD_TIMESTAMP_TOKEN, buildTimestamp)
+            }
+
+            writer.write(newLine + "\n")
+        }
+    }
+}
+
+war.baseName "greeting"
+
+httpPort=8888
+stopPort=8889
+stopKey='codeRed'
+
