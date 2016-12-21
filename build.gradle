@@ -38,6 +38,29 @@ compileJava << {
     }
 }
 
+task pingWebServer << {
+    def result = false
+
+    def urlStr = "http://192.168.99.100:5555/greeting/"
+    def connectParams = [connectTimeout: 2000, readTimeout: 3000]
+
+    try {
+        def page = urlStr.toURL().getText(connectParams)
+    
+        page.eachLine { line ->
+            if (line ==~ /.*Build Timestamp.*/) {
+                result = true
+            }
+        }
+    } catch(Exception e) {
+        System.err.println "TRACER exception : " + e.message
+    }
+
+    if (!result) {
+        throw new GradleException("could not ping DEV web server")
+    }
+}
+
 war.baseName "greeting"
 
 httpPort=8888

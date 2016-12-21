@@ -12,6 +12,12 @@ node {
     sh "${gradleHome}/bin/gradle clean test war -PBUILD_NUMBER=${env.BUILD_NUMBER}"
 }
 
+stage "initialize"
+node {
+    sh "chmod 777 ${env.WORKSPACE}/resources/deploy.sh"
+    sh "chmod 777 ${env.WORKSPACE}/resources/stage.sh"
+}
+
 // -------------------------- DEV (auto-deploy)
 stage "auto-deploy for DEV"
 node {
