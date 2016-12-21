@@ -31,3 +31,8 @@ node {
 }
 
 // -------------------------- run simple web test against DEV
+stage "test"
+node {
+    def gradleHome = tool "G31"
+    sh "${gradleHome}/bin/gradle pingWebServer"
+}
