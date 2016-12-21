@@ -32,9 +32,15 @@ node {
     sh "${env.WORKSPACE}/resources/deploy.sh $ENV ${env.BUILD_NUMBER}"
 }
 
+// -------------------------- 
+stage "docker"
+docker.start()
+
 // -------------------------- run simple web test against DEV
+/*
 stage "test"
 node {
     def gradleHome = tool "G31"
     sh "${gradleHome}/bin/gradle pingWebServer"
 }
+*/
